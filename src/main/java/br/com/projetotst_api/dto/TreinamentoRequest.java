@@ -6,6 +6,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TreinamentoRequest {
 
 @NotBlank(message = "O nome é obrigatório.")
@@ -31,6 +34,8 @@ private Integer participantes;
 
 @NotNull(message = "O status é obrigatório.")
 private StatusTreinamento status;
+
+private List<Long> usuarioIds = new ArrayList<>();
 
 // Getters e Setters
 public String getNome() {
@@ -88,4 +93,12 @@ public void setStatus(StatusTreinamento status) {
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
-}
+
+        public List<Long> getUsuarioIds() {
+            return usuarioIds;
+        }
+
+        public void setUsuarioIds(List<Long> usuarioIds) {
+            this.usuarioIds = usuarioIds == null ? new ArrayList<>() : usuarioIds;
+        }
+    }

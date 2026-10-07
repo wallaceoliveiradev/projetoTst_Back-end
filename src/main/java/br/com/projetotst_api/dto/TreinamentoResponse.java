@@ -3,6 +3,8 @@ package br.com.projetotst_api.dto;
 import br.com.projetotst_api.entity.Treinamento;
 import br.com.projetotst_api.model.StatusTreinamento;
 
+import java.util.List;
+
 public record TreinamentoResponse (
         long id,
         String nome,
@@ -11,7 +13,8 @@ public record TreinamentoResponse (
         Integer cargaHoraria,
         Integer validade,
         Integer participantes,
-        StatusTreinamento  status
+        StatusTreinamento  status,
+        List<Long> usuarioIds
 ) {
     public static TreinamentoResponse from (Treinamento treinamento) {
         return new TreinamentoResponse(
@@ -22,7 +25,8 @@ public record TreinamentoResponse (
                 treinamento.getCargaHoraria(),
                 treinamento.getValidade(),
                 treinamento.getParticipantes(),
-                StatusTreinamento.valueOf(treinamento.getStatus())
+                StatusTreinamento.valueOf(treinamento.getStatus()),
+                treinamento.getColaboradores().stream().map(usuario -> usuario.getId()).toList()
 
         );
     }

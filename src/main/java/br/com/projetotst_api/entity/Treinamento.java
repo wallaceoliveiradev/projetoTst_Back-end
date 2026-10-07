@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 public class Treinamento {
 
@@ -33,6 +36,14 @@ public class Treinamento {
 
     @Column(length = 255)
     private String status;
+
+    @ManyToMany
+    @JoinTable(
+            name = "treinamento_colaborador",
+            joinColumns = @JoinColumn(name = "treinamento_id"),
+            inverseJoinColumns = @JoinColumn(name = "usuario_id"),
+            uniqueConstraints = @UniqueConstraint(columnNames = {"treinamento_id", "usuario_id"}))
+    private Set<Usuario> colaboradores = new HashSet<>();
 
     public Treinamento() {
     }
@@ -109,5 +120,13 @@ public class Treinamento {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Set<Usuario> getColaboradores() {
+        return colaboradores;
+    }
+
+    public void setColaboradores(Set<Usuario> colaboradores) {
+        this.colaboradores = colaboradores;
     }
 }
