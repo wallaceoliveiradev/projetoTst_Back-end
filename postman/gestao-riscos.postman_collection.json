@@ -1,0 +1,328 @@
+{
+  "info": {
+    "_postman_id": "1b2147b8-7b47-4c3f-a3e6-1ed686f01f40",
+    "name": "Gestão de Riscos e EPIs - tst-api",
+    "description": "Autenticação, riscos, associações, estoque e entregas de EPIs. Configure email, senha e funcionarioId como variáveis locais antes de executar.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "email",
+      "value": ""
+    },
+    {
+      "key": "senha",
+      "value": ""
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "riscoId",
+      "value": ""
+    },
+    {
+      "key": "usuarioId",
+      "value": ""
+    },
+    {
+      "key": "funcionarioId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Login",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{email}}\",\n  \"senha\": \"{{senha}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Login aceito', function () {",
+              "    pm.response.to.have.status(200);",
+              "    pm.collectionVariables.set('accessToken', pm.response.json().token);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Listar e filtrar riscos",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/riscos?busca=eletrico&nivel=ALTO&situacao=ATIVO",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "riscos"
+          ],
+          "query": [
+            {
+              "key": "busca",
+              "value": "eletrico"
+            },
+            {
+              "key": "nivel",
+              "value": "ALTO"
+            },
+            {
+              "key": "situacao",
+              "value": "ATIVO"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Cadastrar risco",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"setor\": \"Manutenção\",\n  \"risco\": \"Choque elétrico\",\n  \"nivel\": \"ALTO\",\n  \"situacao\": \"ATIVO\",\n  \"icone\": \"bi-lightning-charge\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/riscos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "riscos"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Risco criado', function () {",
+              "    pm.response.to.have.status(201);",
+              "    pm.environment.set('riscoId', pm.response.json().id);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Editar risco",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"setor\": \"Manutenção elétrica\",\n  \"risco\": \"Choque elétrico\",\n  \"nivel\": \"ALTO\",\n  \"situacao\": \"ATIVO\",\n  \"icone\": \"bi-lightning-charge\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/riscos/{{riscoId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "riscos",
+            "{{riscoId}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Listar riscos de usuário",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/usuarios/{{usuarioId}}/riscos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "usuarios",
+            "{{usuarioId}}",
+            "riscos"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Substituir associações do usuário",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"riscos\": [\n    {\n      \"riscoId\": {{riscoId}},\n      \"validade\": \"2027-12-31\",\n      \"validado\": true\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/usuarios/{{usuarioId}}/riscos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "usuarios",
+            "{{usuarioId}}",
+            "riscos"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Listar minhas associações",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/usuarios/me/riscos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "usuarios",
+            "me",
+            "riscos"
+          ]
+        }
+      }
+    },
+    {
+      "name": "EPIs e entregas",
+      "item": [
+        {
+          "name": "Listar estoque de EPIs",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/epis",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "epis"]
+            }
+          }
+        },
+        {
+          "name": "Registrar entrega com vários EPIs",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"funcionarioId\": {{funcionarioId}},\n  \"dataEntrega\": \"2026-10-08\",\n  \"observacoes\": \"Entrega de equipamentos\",\n  \"itens\": [\n    { \"nome\": \"Capacete de Segurança\", \"quantidade\": 1 },\n    { \"nome\": \"Óculos de Proteção\", \"quantidade\": 1 }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/epis/entregas",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "epis", "entregas"]
+            }
+          }
+        },
+        {
+          "name": "Listar entregas",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/epis/entregas",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "epis", "entregas"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

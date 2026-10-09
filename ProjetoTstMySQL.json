@@ -1,0 +1,115 @@
+{
+    "version": 1,
+    "connectionTags": {},
+    "connections": [
+        {
+            "dbType": "MySQL",
+            "caption": "New Connection 1",
+            "description": "A new Database Connection",
+            "options": {
+                "scheme": "mysql",
+                "host": "localhost",
+                "port": 3306,
+                "user": "root",
+                "ssl-mode": "PREFERRED",
+                "compression-level": 3,
+                "connect-timeout": 0,
+                "disable-heat-wave-check": false
+            },
+            "folderPath": "/",
+            "settings": {
+                "serverStatusCache": {
+                    "endpointFingerprint": "tcp:localhost:3306",
+                    "updatedAt": "2026-10-07T15:05:22.355693+00:00",
+                    "sysvars": [
+                        {
+                            "name": "admin_address",
+                            "value": ""
+                        },
+                        {
+                            "name": "admin_port",
+                            "value": "33062"
+                        },
+                        {
+                            "name": "basedir",
+                            "value": "C:\\Program Files\\MySQL\\MySQL Server 8.0\\"
+                        },
+                        {
+                            "name": "bind_address",
+                            "value": "*"
+                        },
+                        {
+                            "name": "datadir",
+                            "value": "C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Data\\"
+                        },
+                        {
+                            "name": "general_log",
+                            "value": "OFF"
+                        },
+                        {
+                            "name": "general_log_file",
+                            "value": "ALICIA.log"
+                        },
+                        {
+                            "name": "hostname",
+                            "value": "Alicia"
+                        },
+                        {
+                            "name": "log_error",
+                            "value": ".\\ALICIA.err"
+                        },
+                        {
+                            "name": "log_output",
+                            "value": "FILE"
+                        },
+                        {
+                            "name": "plugin_dir",
+                            "value": "C:\\Program Files\\MySQL\\MySQL Server 8.0\\lib\\plugin\\"
+                        },
+                        {
+                            "name": "port",
+                            "value": "3306"
+                        },
+                        {
+                            "name": "server_id",
+                            "value": "1"
+                        },
+                        {
+                            "name": "server_uuid",
+                            "value": "030d2c38-c1a9-11f1-b01a-002404dda152"
+                        },
+                        {
+                            "name": "slow_query_log",
+                            "value": "ON"
+                        },
+                        {
+                            "name": "slow_query_log_file",
+                            "value": "ALICIA-slow.log"
+                        },
+                        {
+                            "name": "socket",
+                            "value": "MySQL"
+                        },
+                        {
+                            "name": "tmpdir",
+                            "value": "C:\\Windows\\SERVIC~1\\NETWOR~1\\AppData\\Local\\Temp"
+                        },
+                        {
+                            "name": "version",
+                            "value": "8.0.46"
+                        },
+                        {
+                            "name": "version_comment",
+                            "value": "MySQL Community Server - GPL"
+                        },
+                        {
+                            "name": "version_compile_os",
+                            "value": "Win64"
+                        }
+                    ]
+                }
+            },
+            "tags": []
+        }
+    ]
+}
