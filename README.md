@@ -34,3 +34,44 @@ consultar as próprias associações.
 Uma associação armazena validade e validação; a resposta também informa se a
 data de validade ainda está vigente. Exemplos executáveis estão em
 `postman/gestao-riscos.postman_collection.json`.
+
+## API de inspeções e checklist
+
+Todos os endpoints exigem `Authorization: Bearer <token>`. Colaboradores
+consultam e atualizam somente as próprias inspeções; administradores podem
+consultar e atualizar todas.
+
+- `GET /api/inspecoes` lista as inspeções visíveis ao usuário.
+- `GET /api/inspecoes/{id}` consulta o cabeçalho e as respostas.
+- `POST /api/inspecoes` grava uma inspeção e suas respostas na mesma transação.
+- `PUT /api/inspecoes/{id}` substitui o cabeçalho e as respostas na mesma
+  transação.
+
+As datas são enviadas no formato ISO `YYYY-MM-DD`. Cada item deve ter uma
+resposta explícita (`conforme`, `naoConforme` ou `pendente`); itens não
+conformes também exigem uma observação. Exemplo de criação:
+
+```json
+{
+  "data": "2026-10-06",
+  "tipoId": "onibus",
+  "tipo": "Pré-operacional",
+  "local": "Garagem Austin",
+  "setor": "Operacional",
+  "numeroOnibus": "3021",
+  "placa": "RIO-3A21",
+  "responsavel": "Responsável pela inspeção",
+  "observacoesGerais": "",
+  "respostas": [
+    {
+      "itemId": "pneus",
+      "descricao": "Pneus em condições adequadas",
+      "status": "naoConforme",
+      "observacao": "Desgaste irregular.",
+      "prioridade": "Alta",
+      "prazoCorrecao": "2026-10-13",
+      "responsavelCorrecao": "Manutenção"
+    }
+  ]
+}
+```

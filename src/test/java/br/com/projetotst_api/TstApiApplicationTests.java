@@ -5,6 +5,7 @@ import br.com.projetotst_api.entity.Treinamento;
 import br.com.projetotst_api.entity.Epis;
 import br.com.projetotst_api.entity.Usuario;
 import br.com.projetotst_api.repository.EpisRepository;
+import br.com.projetotst_api.repository.InspecaoRepository;
 import br.com.projetotst_api.repository.RiscoRepository;
 import br.com.projetotst_api.repository.TreinamentoRepository;
 import br.com.projetotst_api.repository.UsuarioRepository;
@@ -59,6 +60,9 @@ class TstApiApplicationTests {
 
 	@Autowired
 	private EpisRepository episRepository;
+
+	@Autowired
+	private InspecaoRepository inspecaoRepository;
 
 	@BeforeEach
 	void configurarMockMvc() {
@@ -297,6 +301,117 @@ class TstApiApplicationTests {
 						.contentType("application/json")
 						.content(payloadRisco))
 				.andExpect(status().isForbidden());
+	}
+
+	@Test
+	@Transactional
+	void colaboradorSalvaInspecaoERespostasNaMesmaTransacaoComDatasIso() throws Exception {
+		Usuario colaborador = criarColaborador();
+		String authorization = "Bearer " + token(colaborador.getEmail(), "COLABORADOR");
+		String payload = """
+				{
+				  "data": "2026-10-06",
+				  "tipoId": "onibus",
+				  "tipo": "Pré-operacional",
+				  "local": "Garagem Austin",
+				  "setor": "Operacional",
+				  "numeroOnibus": "3021",
+				  "placa": "RIO-3A21",
+				  "responsavel": "Responsável de teste",
+				  "observacoesGerais": "Inspeção de teste",
+				  "respostas": [
+				    {
+				      "itemId": "pneus",
+				      "descricao": "Pneus em condições adequadas",
+				      "status": "naoConforme",
+				      "observacao": "Desgaste irregular.",
+				      "prioridade": "Alta",
+				      "prazoCorrecao": "2026-10-13",
+				      "responsavelCorrecao": "Manutenção"
+				    },
+				    {
+				      "itemId": "freios",
+				      "descricao": "Sistema de freios funcionando",
+				      "status": "pendente",
+				      "observacao": "",
+				      "prioridade": "Média",
+				      "prazoCorrecao": null,
+				      "responsavelCorrecao": ""
+				    }
+				  ]
+				}
+				""";
+
+		mockMvc.perform(post("/api/inspecoes")
+						.header("Authorization", authorization)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(payload))
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.data").value("2026-10-06"))
+				.andExpect(jsonPath("$.tipoId").value("onibus"))
+				.andExpect(jsonPath("$.respostas.length()").value(2))
+				.andExpect(jsonPath("$.respostas[0].prazoCorrecao").value("2026-10-13"))
+				.andExpect(jsonPath("$.naoConformes").value(1));
+
+		var salvas = inspecaoRepository.findAllByUsuarioIdOrderByDataDescIdDesc(colaborador.getId());
+		org.junit.jupiter.api.Assertions.assertEquals(1, salvas.size());
+		org.junit.jupiter.api.Assertions.assertEquals(2, salvas.getFirst().getRespostas().size());
+
+		Long inspecaoId = salvas.getFirst().getId();
+		mockMvc.perform(put("/api/inspecoes/" + inspecaoId)
+						.header("Authorization", authorization)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(payload.replace("\"2026-10-06\"", "\"2026-10-07\"")))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.data").value("2026-10-07"))
+				.andExpect(jsonPath("$.respostas.length()").value(2));
+
+		mockMvc.perform(get("/api/inspecoes")
+						.header("Authorization", authorization))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.length()").value(1))
+				.andExpect(jsonPath("$[0].data").value("2026-10-07"));
+	}
+
+	@Test
+	@Transactional
+	void colaboradorNaoPodeConsultarInspecaoDeOutroUsuario() throws Exception {
+		Usuario proprietario = criarColaborador();
+		Usuario outroColaborador = criarColaborador();
+		String payload = """
+				{
+				  "data": "2026-10-06",
+				  "tipoId": "garagem",
+				  "tipo": "Rotina",
+				  "local": "Garagem",
+				  "setor": "Operacional",
+				  "responsavel": "Responsável de teste",
+				  "respostas": [
+				    {
+				      "itemId": "piso",
+				      "descricao": "Piso limpo",
+				      "status": "conforme",
+				      "observacao": "",
+				      "prioridade": "Média",
+				      "prazoCorrecao": null,
+				      "responsavelCorrecao": ""
+				    }
+				  ]
+				}
+				""";
+
+		mockMvc.perform(post("/api/inspecoes")
+						.header("Authorization", "Bearer " + token(proprietario.getEmail(), "COLABORADOR"))
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(payload))
+				.andExpect(status().isCreated());
+		Long id = inspecaoRepository
+				.findAllByUsuarioIdOrderByDataDescIdDesc(proprietario.getId())
+				.getFirst().getId();
+
+		mockMvc.perform(get("/api/inspecoes/" + id)
+						.header("Authorization", "Bearer " + token(outroColaborador.getEmail(), "COLABORADOR")))
+				.andExpect(status().isNotFound());
 	}
 
 	private Usuario criarColaborador() {
