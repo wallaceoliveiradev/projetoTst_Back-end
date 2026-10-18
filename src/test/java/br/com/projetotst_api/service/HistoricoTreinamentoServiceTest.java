@@ -16,7 +16,9 @@ import org.springframework.web.server.ResponseStatusException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.server.ResponseStatusException;
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -44,7 +46,10 @@ class HistoricoTreinamentoServiceTest {
         treinamentoRepository = mock(TreinamentoRepository.class);
         usuarioRepository = mock(UsuarioRepository.class);
         service = new HistoricoTreinamentoService(
-                historicoRepository, parametroRepository, treinamentoRepository, usuarioRepository);
+                historicoRepository, parametroRepository, treinamentoRepository, usuarioRepository,
+                Clock.fixed(
+                        LocalDate.of(2026, 10, 18).atStartOfDay(ZoneId.of("America/Sao_Paulo")).toInstant(),
+                        ZoneId.of("America/Sao_Paulo")));
     }
 
     @Test

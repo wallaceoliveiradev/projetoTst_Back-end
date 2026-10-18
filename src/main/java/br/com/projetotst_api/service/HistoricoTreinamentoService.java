@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Clock;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
@@ -35,15 +36,18 @@ public class HistoricoTreinamentoService {
     private final ParametroTreinamentoRepository parametroRepository;
     private final TreinamentoRepository treinamentoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final Clock clock;
 
     public HistoricoTreinamentoService(HistoricoTreinamentoRepository historicoRepository,
                                       ParametroTreinamentoRepository parametroRepository,
                                       TreinamentoRepository treinamentoRepository,
-                                      UsuarioRepository usuarioRepository) {
+                                      UsuarioRepository usuarioRepository,
+                                      Clock clock) {
         this.historicoRepository = historicoRepository;
         this.parametroRepository = parametroRepository;
         this.treinamentoRepository = treinamentoRepository;
         this.usuarioRepository = usuarioRepository;
+        this.clock = clock;
     }
 
     @Transactional(readOnly = true)
@@ -51,7 +55,7 @@ public class HistoricoTreinamentoService {
         List<HistoricoTreinamento> registros = administrador
                 ? historicoRepository.findAllByOrderByDataConclusaoDesc()
                 : historicoRepository.findDistinctByColaboradorEmailIgnoreCaseOrderByDataConclusaoDesc(email);
-        LocalDate hoje = LocalDate.now();
+        LocalDate hoje = LocalDate.now(clock);
         return registros.stream()
                 .map(registro -> HistoricoTreinamentoResponse.from(registro, statusAtual(registro, hoje)))
                 .toList();
@@ -61,7 +65,8 @@ public class HistoricoTreinamentoService {
     public HistoricoTreinamentoResponse registrar(RegistroConclusaoTreinamentoRequest request,
                                                   MultipartFile arquivo) {
         validarArquivo(arquivo);
-        if (request.dataConclusao().isAfter(LocalDate.now())) {
+        LocalDate hoje = LocalDate.now(clock);
+        if (request.dataConclusao().isAfter(hoje)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A data de conclusão não pode ser futura.");
         }
 
@@ -104,7 +109,7 @@ public class HistoricoTreinamentoService {
         treinamento.getColaboradores().add(colaborador);
         treinamentoRepository.save(treinamento);
         HistoricoTreinamento salvo = historicoRepository.save(registro);
-        return HistoricoTreinamentoResponse.from(salvo, statusAtual(salvo, LocalDate.now()));
+        return HistoricoTreinamentoResponse.from(salvo, statusAtual(salvo, hoje));
     }
 
     @Transactional
@@ -115,7 +120,7 @@ public class HistoricoTreinamentoService {
                 || StatusHistoricoTreinamento.INVALIDADO.name().equals(registro.getStatus())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Este ciclo não pode ser invalidado novamente.");
         }
-        registro.invalidar(request.motivo().trim(), LocalDate.now());
+        registro.invalidar(request.motivo().trim(), LocalDate.now(clock));
         return registro;
     }
 

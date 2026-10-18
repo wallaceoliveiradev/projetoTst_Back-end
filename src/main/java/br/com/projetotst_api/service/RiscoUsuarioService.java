@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,33 +27,30 @@ public class RiscoUsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final RiscoRepository riscoRepository;
     private final RiscoUsuarioRepository associacaoRepository;
+    private final Clock clock;
 
     public RiscoUsuarioService(
             UsuarioRepository usuarioRepository,
             RiscoRepository riscoRepository,
-            RiscoUsuarioRepository associacaoRepository) {
+            RiscoUsuarioRepository associacaoRepository,
+            Clock clock) {
         this.usuarioRepository = usuarioRepository;
         this.riscoRepository = riscoRepository;
         this.associacaoRepository = associacaoRepository;
+        this.clock = clock;
     }
 
     @Transactional(readOnly = true)
     public List<RiscoUsuarioResponse> listarPorUsuarioId(Long usuarioId) {
         buscarUsuario(usuarioId);
-        return associacaoRepository.findByUsuario_IdOrderByIdAsc(usuarioId)
-                .stream()
-                .map(RiscoUsuarioResponse::from)
-                .toList();
+        return adaptar(associacaoRepository.findByUsuario_IdOrderByIdAsc(usuarioId));
     }
 
     @Transactional(readOnly = true)
     public List<RiscoUsuarioResponse> listarDoUsuario(String email) {
         Usuario usuario = usuarioRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado."));
-        return associacaoRepository.findByUsuario_IdOrderByIdAsc(usuario.getId())
-                .stream()
-                .map(RiscoUsuarioResponse::from)
-                .toList();
+        return adaptar(associacaoRepository.findByUsuario_IdOrderByIdAsc(usuario.getId()));
     }
 
     @Transactional
@@ -82,9 +81,13 @@ public class RiscoUsuarioService {
                         request.validado()))
                 .toList();
         associacaoRepository.saveAll(novasAssociacoes);
-        return associacaoRepository.findByUsuario_IdOrderByIdAsc(usuarioId)
-                .stream()
-                .map(RiscoUsuarioResponse::from)
+        return adaptar(associacaoRepository.findByUsuario_IdOrderByIdAsc(usuarioId));
+    }
+
+    private List<RiscoUsuarioResponse> adaptar(List<RiscoUsuario> associacoes) {
+        LocalDate hoje = LocalDate.now(clock);
+        return associacoes.stream()
+                .map(associacao -> RiscoUsuarioResponse.from(associacao, hoje))
                 .toList();
     }
 

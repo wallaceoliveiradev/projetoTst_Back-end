@@ -136,6 +136,67 @@ class TstApiApplicationTests {
 
 	@Test
 	@Transactional
+	void indicadoresERelatoriosExigemAdministradorERespondemComDadosAgregados() throws Exception {
+		Usuario administrador = criarUsuario("ADMIN");
+		Usuario colaborador = criarColaborador();
+		String periodo = "?inicio=2026-10-01&fim=2026-10-31";
+
+		mockMvc.perform(get("/api/dashboard"))
+				.andExpect(status().isUnauthorized());
+		mockMvc.perform(get("/api/dashboard")
+						.header("Authorization", "Bearer " + token(colaborador.getEmail(), "COLABORADOR")))
+				.andExpect(status().isForbidden());
+		mockMvc.perform(get("/api/relatorios/resumo" + periodo)
+						.header("Authorization", "Bearer " + token(colaborador.getEmail(), "COLABORADOR")))
+				.andExpect(status().isForbidden());
+
+		String authorization = "Bearer " + token(administrador.getEmail(), "ADMIN");
+		mockMvc.perform(get("/api/dashboard").header("Authorization", authorization))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.dataReferencia").exists())
+				.andExpect(jsonPath("$.treinamentosVencidos").isNumber())
+				.andExpect(jsonPath("$.percentualEpisProximosVencimento").isNumber());
+		mockMvc.perform(get("/api/dashboard")
+						.param("diasAlertaEpi", "366")
+						.header("Authorization", authorization))
+				.andExpect(status().isBadRequest());
+
+		mockMvc.perform(get("/api/relatorios/resumo" + periodo)
+						.header("Authorization", authorization))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.inicio").value("2026-10-01"))
+				.andExpect(jsonPath("$.fim").value("2026-10-31"))
+				.andExpect(jsonPath("$.treinamentosPorMes").isArray())
+				.andExpect(jsonPath("$.riscosPorNivel").isArray());
+
+		for (String tipo : new String[]{
+				"geral", "funcionarios", "treinamentos", "epis", "riscos", "inspecoes", "checklist"}) {
+			mockMvc.perform(get("/api/relatorios/dados")
+							.param("tipo", tipo)
+							.param("inicio", "2026-10-01")
+							.param("fim", "2026-10-31")
+							.header("Authorization", authorization))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.tipo").value(tipo))
+					.andExpect(jsonPath("$.colunas").isArray())
+					.andExpect(jsonPath("$.linhas").isArray());
+		}
+
+		mockMvc.perform(get("/api/relatorios/dados")
+						.param("tipo", "desconhecido")
+						.param("inicio", "2026-10-01")
+						.param("fim", "2026-10-31")
+						.header("Authorization", authorization))
+				.andExpect(status().isBadRequest());
+		mockMvc.perform(get("/api/relatorios/resumo")
+						.param("inicio", "2026-10-31")
+						.param("fim", "2026-10-01")
+						.header("Authorization", authorization))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@Transactional
 	void colaboradorRecebeSomenteTreinamentosInscritos() throws Exception {
 		Usuario colaborador = criarColaborador();
 		Treinamento inscrito = treinamento("Treinamento inscrito");

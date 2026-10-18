@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -22,12 +23,14 @@ public class EntregaEpiService {
     private final EntregaEpiRepository entregas;
     private final EpisRepository epis;
     private final UsuarioRepository usuarios;
+    private final Clock clock;
 
     public EntregaEpiService(EntregaEpiRepository entregas, EpisRepository epis,
-                             UsuarioRepository usuarios) {
+                             UsuarioRepository usuarios, Clock clock) {
         this.entregas = entregas;
         this.epis = epis;
         this.usuarios = usuarios;
+        this.clock = clock;
     }
 
     @Transactional(readOnly = true)
@@ -81,7 +84,8 @@ public class EntregaEpiService {
         for (var solicitado : solicitados.entrySet()) {
             int restante = solicitado.getValue();
             List<Epis> lotes = epis.findAllByNomeForUpdate(solicitado.getKey()).stream()
-                    .filter(lote -> lote.getQuantidade() > 0 && !lote.getValidade().isBefore(LocalDate.now()))
+                    .filter(lote -> lote.getQuantidade() > 0
+                            && !lote.getValidade().isBefore(LocalDate.now(clock)))
                     .toList();
             int disponivel = lotes.stream().mapToInt(Epis::getQuantidade).sum();
             if (disponivel < restante) {

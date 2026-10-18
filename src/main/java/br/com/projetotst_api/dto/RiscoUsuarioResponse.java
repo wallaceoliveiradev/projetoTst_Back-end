@@ -16,7 +16,7 @@ public record RiscoUsuarioResponse(
         boolean validadeValida,
         boolean validado
 ) {
-    public static RiscoUsuarioResponse from(RiscoUsuario associacao) {
+    public static RiscoUsuarioResponse from(RiscoUsuario associacao, LocalDate hoje) {
         return new RiscoUsuarioResponse(
                 associacao.getRisco().getId(),
                 associacao.getRisco().getSetor(),
@@ -24,7 +24,7 @@ public record RiscoUsuarioResponse(
                 associacao.getRisco().getNivel(),
                 associacao.getRisco().getSituacao(),
                 associacao.getValidade(),
-                !associacao.getValidade().isBefore(LocalDate.now()),
+                !associacao.getValidade().isBefore(hoje),
                 associacao.isValidado());
     }
 }
