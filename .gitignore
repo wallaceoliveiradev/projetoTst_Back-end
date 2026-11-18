@@ -38,3 +38,8 @@ build/
 # Sistemas operacionais
 .DS_Store
 Thumbs.db
+# Arquivos gerados localmente
+repomix-output.xml
+
+# Node/Repomix
+node_modules/
