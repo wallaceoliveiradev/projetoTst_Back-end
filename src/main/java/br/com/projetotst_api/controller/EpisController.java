@@ -2,6 +2,7 @@ package br.com.projetotst_api.controller;
 
 import br.com.projetotst_api.dto.EpisRequest;
 import br.com.projetotst_api.dto.EpisResponse;
+import br.com.projetotst_api.dto.EpiCatalogoResponse;
 import br.com.projetotst_api.service.EpisService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,11 @@ public class EpisController {
     @GetMapping
     public ResponseEntity<List<EpisResponse>> listar() {
         return ResponseEntity.ok(service.listar());
+    }
+
+    @GetMapping("/catalogo")
+    public ResponseEntity<List<EpiCatalogoResponse>> listarCatalogo() {
+        return ResponseEntity.ok(service.listarCatalogo());
     }
 
     @GetMapping("/{id}")

@@ -2,6 +2,7 @@ package br.com.projetotst_api.service;
 
 import br.com.projetotst_api.dto.EpisRequest;
 import br.com.projetotst_api.dto.EpisResponse;
+import br.com.projetotst_api.dto.EpiCatalogoResponse;
 import br.com.projetotst_api.entity.Epis;
 import br.com.projetotst_api.repository.EpisRepository;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.LinkedHashMap;
 
 @Service
 public class EpisService {
@@ -25,6 +27,14 @@ public class EpisService {
         return repository.findAll().stream()
                 .map(EpisResponse::from)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<EpiCatalogoResponse> listarCatalogo() {
+        var porNome = new LinkedHashMap<String, EpiCatalogoResponse>();
+        repository.findAll().forEach(epi -> porNome.putIfAbsent(
+                epi.getNome().trim().toLowerCase(), EpiCatalogoResponse.from(epi)));
+        return List.copyOf(porNome.values());
     }
 
     @Transactional(readOnly = true)

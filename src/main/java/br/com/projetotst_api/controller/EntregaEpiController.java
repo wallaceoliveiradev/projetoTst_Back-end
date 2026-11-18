@@ -6,6 +6,7 @@ import br.com.projetotst_api.service.EntregaEpiService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
@@ -21,6 +22,11 @@ public class EntregaEpiController {
     @GetMapping
     public List<EntregaEpiResponse> listar() {
         return service.listar();
+    }
+
+    @GetMapping("/minhas")
+    public List<EntregaEpiResponse> listarMinhas(Authentication authentication) {
+        return service.listarDoUsuario(authentication.getName());
     }
 
     @PostMapping

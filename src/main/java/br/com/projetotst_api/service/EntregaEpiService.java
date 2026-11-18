@@ -39,6 +39,12 @@ public class EntregaEpiService {
                 .map(EntregaEpiResponse::from).toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<EntregaEpiResponse> listarDoUsuario(String email) {
+        return entregas.findAllByUsuario_EmailIgnoreCaseOrderByDataEntregaDescIdDesc(email)
+                .stream().map(EntregaEpiResponse::from).toList();
+    }
+
     @Transactional
     public EntregaEpiResponse criar(EntregaEpiRequest request) {
         return salvar(null, request);

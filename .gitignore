@@ -31,3 +31,10 @@ build/
 
 ### VS Code ###
 .vscode/
+/repomix-output.xml
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Sistemas operacionais
+.DS_Store
+Thumbs.db

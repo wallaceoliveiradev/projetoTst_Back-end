@@ -19,6 +19,8 @@ public interface EntregaEpiRepository extends JpaRepository<EntregaEpi, Long> {
 
     List<EntregaEpi> findAllByOrderByDataEntregaDescIdDesc();
 
+    List<EntregaEpi> findAllByUsuario_EmailIgnoreCaseOrderByDataEntregaDescIdDesc(String email);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select e from EntregaEpi e where e.id = :id")
     Optional<EntregaEpi> findByIdForUpdate(@Param("id") Long id);
