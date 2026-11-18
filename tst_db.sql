@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 02/11/2026 às 23:44
+-- Tempo de geração: 18/11/2026 às 02:42
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -45,6 +45,14 @@ CREATE TABLE `entrega_epi` (
   `usuario_id` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Despejando dados para a tabela `entrega_epi`
+--
+
+INSERT INTO `entrega_epi` (`id`, `data_entrega`, `observacoes`, `usuario_id`) VALUES
+(1, '2026-11-17', 'teste de registro', 2),
+(2, '2026-11-17', 'teste de resgistro', 2);
+
 -- --------------------------------------------------------
 
 --
@@ -57,6 +65,14 @@ CREATE TABLE `entrega_epi_item` (
   `entrega_id` bigint(20) NOT NULL,
   `epi_id` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `entrega_epi_item`
+--
+
+INSERT INTO `entrega_epi_item` (`id`, `quantidade`, `entrega_id`, `epi_id`) VALUES
+(1, 1, 1, 1),
+(2, 1, 2, 6);
 
 -- --------------------------------------------------------
 
@@ -73,6 +89,22 @@ CREATE TABLE `epis` (
   `quantidade` int(11) NOT NULL,
   `validade` date NOT NULL
 ) ;
+
+--
+-- Despejando dados para a tabela `epis`
+--
+
+INSERT INTO `epis` (`id`, `ca`, `categoria`, `data_entrada`, `nome`, `quantidade`, `validade`) VALUES
+(1, 'CA 498', 'Cabeça', '2026-11-17', 'Capacete de Segurança', 9, '2030-11-17'),
+(2, 'CA 16462', 'Olhos e Face', '2026-11-17', 'Óculos de Proteção', 10, '2030-11-17'),
+(3, 'CA 5674', 'Ouvidos', '2026-11-17', 'Protetor Auricular', 10, '2030-11-17'),
+(4, 'CA 30916', 'Mãos', '2026-11-17', 'Luva Mecânica', 10, '2030-11-17'),
+(5, 'CA 44608', 'Mãos', '2026-11-17', 'Luva Anticorte', 10, '2030-11-17'),
+(6, 'CA 40142 / CA 21159', 'Pés', '2026-11-17', 'Botina de Segurança', 9, '2030-11-17'),
+(7, 'CA 41514', 'Respiratória', '2026-11-17', 'Máscara PFF2', 10, '2030-11-17'),
+(8, 'CA 34183', 'Corpo', '2026-11-17', 'Macacão de Proteção', 10, '2030-11-17'),
+(9, 'CA 18856', 'Corpo', '2026-11-17', 'Avental de Raspa', 1, '2030-11-17'),
+(10, 'CA 46614 / CA 34336', 'Olhos e Face', '2026-11-17', 'Máscara para Solda', 12, '2030-11-17');
 
 -- --------------------------------------------------------
 
@@ -225,7 +257,8 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`id`, `cargo`, `email`, `nome`, `perfil`, `senha`, `status`) VALUES
-(1, 'Administrador', 'admin@localhost', 'Administrador', 'ADMIN', '$2a$10$5gLq/OhCLFAY9HINOkjo4.sFijumWMXqYw8t05YvByCXZ1awk86Ye', 'ATIVO');
+(1, 'Administrador', 'admin@localhost', 'Administrador', 'ADMIN', '$2a$10$5gLq/OhCLFAY9HINOkjo4.sFijumWMXqYw8t05YvByCXZ1awk86Ye', 'ATIVO'),
+(2, 'Motorista', 'joaodasilva@empresa.com', 'João da Silva', 'COLABORADOR', '$2a$10$6Kn.LDwu0fLSs3GyX5WCHOD.oSCIP8griTg1LKry3TX7.TzKj.vU6', 'ATIVO');
 
 -- --------------------------------------------------------
 
@@ -350,13 +383,13 @@ ALTER TABLE `arquivo_certificado_treinamento`
 -- AUTO_INCREMENT de tabela `entrega_epi`
 --
 ALTER TABLE `entrega_epi`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de tabela `entrega_epi_item`
 --
 ALTER TABLE `entrega_epi_item`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de tabela `epis`
@@ -404,7 +437,7 @@ ALTER TABLE `treinamento`
 -- AUTO_INCREMENT de tabela `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de tabela `usuario_risco`
