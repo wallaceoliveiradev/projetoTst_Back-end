@@ -43,3 +43,6 @@ repomix-output.xml
 
 # Node/Repomix
 node_modules/
+
+application.properties/
+
