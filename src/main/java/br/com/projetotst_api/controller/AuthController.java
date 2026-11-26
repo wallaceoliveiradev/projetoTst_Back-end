@@ -7,7 +7,6 @@ import br.com.projetotst_api.entity.Usuario;
 import br.com.projetotst_api.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,8 +29,12 @@ public class AuthController {
             String token = authService.gerarToken(request.email(), request.senha());
             return ResponseEntity.ok(new LoginResponse(token, authService.expiracaoEmSegundos(),
                     UsuarioResponse.from(usuario)));
-        } catch (AuthenticationException exception) {
+        } catch (AuthService.CredenciaisInvalidasException exception) {
             return ResponseEntity.status(401).build();
+        } catch (AuthService.ContaBloqueadaException exception) {
+            return ResponseEntity.status(423).build();
+        } catch (AuthService.ContaInativaException exception) {
+            return ResponseEntity.status(403).build();
         }
     }
 }

@@ -59,6 +59,7 @@ public class SecurityConfig {
                                 "/api/epis/catalogo", "/api/epis/entregas/minhas").authenticated()
                         .requestMatchers("/api/dashboard", "/api/dashboard/**",
                                 "/api/relatorios", "/api/relatorios/**").hasRole("ADMIN")
+                        .requestMatchers("/api/notificacoes/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/riscos/**").hasRole("ADMIN")
                         .requestMatchers("/api/usuarios", "/api/usuarios/**").hasRole("ADMIN")
                         .requestMatchers("/api/epis", "/api/epis/**").hasRole("ADMIN")

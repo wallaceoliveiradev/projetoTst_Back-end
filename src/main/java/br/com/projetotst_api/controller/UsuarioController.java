@@ -3,6 +3,7 @@ package br.com.projetotst_api.controller;
 import br.com.projetotst_api.dto.UsuarioMeRequest;
 import br.com.projetotst_api.dto.UsuarioRequest;
 import br.com.projetotst_api.dto.UsuarioResponse;
+import br.com.projetotst_api.dto.StatusUsuarioRequest;
 import br.com.projetotst_api.entity.Usuario;
 import br.com.projetotst_api.repository.UsuarioRepository;
 import jakarta.validation.Valid;
@@ -69,6 +70,19 @@ public class UsuarioController {
         usuario.setPerfil(perfilOuPadrao(request.perfil()));
         usuario.setCargo(request.cargo());
         usuario.setStatus(statusOuPadrao(request.status()));
+        return UsuarioResponse.from(repository.save(usuario));
+    }
+
+    @PatchMapping("/{id}/status")
+    public UsuarioResponse atualizarStatus(@PathVariable Long id,
+                                           @Valid @RequestBody StatusUsuarioRequest request) {
+        String status = request.status().toUpperCase();
+        if (!status.equals("ATIVO") && !status.equals("INATIVO")) {
+            throw new IllegalArgumentException("Status deve ser ATIVO ou INATIVO");
+        }
+        Usuario usuario = repository.findById(id).orElseThrow();
+        usuario.setStatus(status);
+        if (status.equals("ATIVO")) usuario.setTentativasLoginFalhas(0);
         return UsuarioResponse.from(repository.save(usuario));
     }
 

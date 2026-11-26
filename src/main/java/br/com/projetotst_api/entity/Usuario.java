@@ -35,6 +35,9 @@ public class Usuario {
     @Column(nullable = false, length = 30)
     private String status;
 
+    @Column(nullable = false)
+    private Integer tentativasLoginFalhas = 0;
+
     protected Usuario() {
     }
 
@@ -58,6 +61,7 @@ public class Usuario {
     public String getPerfil() { return perfil; }
     public String getCargo() { return cargo; }
     public String getStatus() { return status; }
+    public int getTentativasLoginFalhas() { return tentativasLoginFalhas; }
 
     public void setNome(String nome) { this.nome = nome; }
     public void setEmail(String email) { this.email = email; }
@@ -65,6 +69,7 @@ public class Usuario {
     public void setPerfil(String perfil) { this.perfil = perfil; }
     public void setCargo(String cargo) { this.cargo = cargo; }
     public void setStatus(String status) { this.status = status; }
+    public void setTentativasLoginFalhas(int tentativasLoginFalhas) { this.tentativasLoginFalhas = tentativasLoginFalhas; }
 
     @Override
     public boolean equals(Object o) {
