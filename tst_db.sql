@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 18/11/2026 às 02:42
+-- Tempo de geração: 27/11/2026 às 00:23
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -104,7 +104,9 @@ INSERT INTO `epis` (`id`, `ca`, `categoria`, `data_entrada`, `nome`, `quantidade
 (7, 'CA 41514', 'Respiratória', '2026-11-17', 'Máscara PFF2', 10, '2030-11-17'),
 (8, 'CA 34183', 'Corpo', '2026-11-17', 'Macacão de Proteção', 10, '2030-11-17'),
 (9, 'CA 18856', 'Corpo', '2026-11-17', 'Avental de Raspa', 1, '2030-11-17'),
-(10, 'CA 46614 / CA 34336', 'Olhos e Face', '2026-11-17', 'Máscara para Solda', 12, '2030-11-17');
+(10, 'CA 46614 / CA 34336', 'Olhos e Face', '2026-11-17', 'Máscara para Solda', 12, '2030-11-17'),
+(11, 'CA 18856', 'Corpo', '2026-11-25', 'Avental de Raspa', 1, '2030-11-25'),
+(12, 'CA 35520', 'Corpo', '2026-11-25', 'Cinturão de segurança / trava-queda', 10, '2030-12-25');
 
 -- --------------------------------------------------------
 
@@ -148,6 +150,21 @@ CREATE TABLE `inspecao` (
   `setor` varchar(120) DEFAULT NULL,
   `tipo` varchar(60) NOT NULL,
   `tipo_id` varchar(20) NOT NULL,
+  `usuario_id` bigint(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `notificacao_admin`
+--
+
+CREATE TABLE `notificacao_admin` (
+  `id` bigint(20) NOT NULL,
+  `criada_em` datetime(6) NOT NULL,
+  `email_usuario` varchar(180) NOT NULL,
+  `lida` bit(1) NOT NULL,
+  `nome_usuario` varchar(120) NOT NULL,
   `usuario_id` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -249,16 +266,18 @@ CREATE TABLE `usuario` (
   `nome` varchar(120) NOT NULL,
   `perfil` varchar(30) NOT NULL,
   `senha` varchar(255) NOT NULL,
-  `status` varchar(30) NOT NULL
+  `status` varchar(30) NOT NULL,
+  `tentativasLoginFalhas` int(11) NOT NULL DEFAULT 0,
+  `tentativas_login_falhas` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Despejando dados para a tabela `usuario`
 --
 
-INSERT INTO `usuario` (`id`, `cargo`, `email`, `nome`, `perfil`, `senha`, `status`) VALUES
-(1, 'Administrador', 'admin@localhost', 'Administrador', 'ADMIN', '$2a$10$5gLq/OhCLFAY9HINOkjo4.sFijumWMXqYw8t05YvByCXZ1awk86Ye', 'ATIVO'),
-(2, 'Motorista', 'joaodasilva@empresa.com', 'João da Silva', 'COLABORADOR', '$2a$10$6Kn.LDwu0fLSs3GyX5WCHOD.oSCIP8griTg1LKry3TX7.TzKj.vU6', 'ATIVO');
+INSERT INTO `usuario` (`id`, `cargo`, `email`, `nome`, `perfil`, `senha`, `status`, `tentativasLoginFalhas`, `tentativas_login_falhas`) VALUES
+(1, 'Administrador', 'admin@localhost', 'Administrador', 'ADMIN', '$2a$10$5gLq/OhCLFAY9HINOkjo4.sFijumWMXqYw8t05YvByCXZ1awk86Ye', 'ATIVO', 0, 0),
+(2, 'Motorista', 'joaodasilva@empresa.com', 'João da Silva', 'COLABORADOR', '$2a$10$6Kn.LDwu0fLSs3GyX5WCHOD.oSCIP8griTg1LKry3TX7.TzKj.vU6', 'ATIVO', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -273,6 +292,13 @@ CREATE TABLE `usuario_risco` (
   `risco_id` bigint(20) NOT NULL,
   `usuario_id` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `usuario_risco`
+--
+
+INSERT INTO `usuario_risco` (`id`, `validade`, `validado`, `risco_id`, `usuario_id`) VALUES
+(5, '2026-11-27', b'0', 2, 2);
 
 --
 -- Índices para tabelas despejadas
@@ -320,6 +346,12 @@ ALTER TABLE `historico_treinamento`
 ALTER TABLE `inspecao`
   ADD PRIMARY KEY (`id`),
   ADD KEY `FKnjl27b4e3e49i64viectlg2i9` (`usuario_id`);
+
+--
+-- Índices de tabela `notificacao_admin`
+--
+ALTER TABLE `notificacao_admin`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Índices de tabela `parametro_treinamento`
@@ -410,6 +442,12 @@ ALTER TABLE `inspecao`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de tabela `notificacao_admin`
+--
+ALTER TABLE `notificacao_admin`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de tabela `parametro_treinamento`
 --
 ALTER TABLE `parametro_treinamento`
@@ -443,7 +481,7 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de tabela `usuario_risco`
 --
 ALTER TABLE `usuario_risco`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Restrições para tabelas despejadas
