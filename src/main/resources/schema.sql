@@ -1,6 +1,6 @@
 -- Idempotent schema updates needed by the login lock and admin notifications.
-ALTER TABLE usuario
-    ADD COLUMN IF NOT EXISTS tentativas_login_falhas INT NOT NULL DEFAULT 0;
+--ALTER TABLE usuario
+  --  ADD COLUMN IF NOT EXISTS tentativas_login_falhas INT NOT NULL DEFAULT 0;
 
 CREATE TABLE IF NOT EXISTS notificacao_admin (
     id BIGINT NOT NULL AUTO_INCREMENT,
