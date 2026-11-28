@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 27/11/2026 às 00:23
+-- Tempo de geração: 28/11/2026 às 15:03
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -156,6 +156,21 @@ CREATE TABLE `inspecao` (
 -- --------------------------------------------------------
 
 --
+-- Estrutura para tabela `mensagem_suporte`
+--
+
+CREATE TABLE `mensagem_suporte` (
+  `id` bigint(20) NOT NULL,
+  `usuario_id` bigint(20) NOT NULL,
+  `tipo` varchar(30) NOT NULL,
+  `mensagem` varchar(4000) NOT NULL,
+  `criada_em` datetime(6) NOT NULL,
+  `visualizada` bit(1) NOT NULL DEFAULT b'0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura para tabela `notificacao_admin`
 --
 
@@ -221,9 +236,26 @@ CREATE TABLE `risco` (
 
 INSERT INTO `risco` (`id`, `icone`, `nivel`, `risco`, `setor`, `situacao`) VALUES
 (1, 'bi-wrench', 'MEDIO', 'Contato com Produtos Químicos', 'Oficina Mecânica', 'ATIVO'),
-(2, 'bi-shield-exclamation', 'ALTO', 'Atropelamento por Manobra de Ônibus', 'Acidente', 'ATIVO'),
+(2, NULL, 'ALTO', 'Atropelamento por Manobra de Ônibus', 'Acidente', 'ATIVO'),
 (3, 'bi-lightning-charge', 'ALTO', 'Choque Elétrico', 'Manutenção Elétrica', 'ATIVO'),
-(4, 'bi-droplet', 'MEDIO', 'Chão Molhado e Escorregadio', 'Lavagem de Veículos', 'ATIVO');
+(4, NULL, 'MEDIO', 'Chão Molhado e Escorregadio', 'Lavagem de Veículos', 'ATIVO');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `solicitacao_epi`
+--
+
+CREATE TABLE `solicitacao_epi` (
+  `id` bigint(20) NOT NULL,
+  `usuario_id` bigint(20) NOT NULL,
+  `tipo` varchar(20) NOT NULL,
+  `epi` varchar(120) NOT NULL,
+  `quantidade` int(11) NOT NULL,
+  `motivo` varchar(500) NOT NULL,
+  `criada_em` datetime(6) NOT NULL,
+  `visualizada` bit(1) NOT NULL DEFAULT b'0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -277,7 +309,8 @@ CREATE TABLE `usuario` (
 
 INSERT INTO `usuario` (`id`, `cargo`, `email`, `nome`, `perfil`, `senha`, `status`, `tentativasLoginFalhas`, `tentativas_login_falhas`) VALUES
 (1, 'Administrador', 'admin@localhost', 'Administrador', 'ADMIN', '$2a$10$5gLq/OhCLFAY9HINOkjo4.sFijumWMXqYw8t05YvByCXZ1awk86Ye', 'ATIVO', 0, 0),
-(2, 'Motorista', 'joaodasilva@empresa.com', 'João da Silva', 'COLABORADOR', '$2a$10$6Kn.LDwu0fLSs3GyX5WCHOD.oSCIP8griTg1LKry3TX7.TzKj.vU6', 'ATIVO', 0, 0);
+(2, 'Motorista', 'joaodasilva@empresa.com', 'João da Silva', 'COLABORADOR', '$2a$10$6Kn.LDwu0fLSs3GyX5WCHOD.oSCIP8griTg1LKry3TX7.TzKj.vU6', 'ATIVO', 0, 0),
+(3, 'Administrador', 'admin@localhost.com', 'Administrador', 'ADMIN', '$2a$10$TQFMRu7bJ/r8woCLzMIJc.jnvvYFBRxdRYugQpMdE1l9I3kYEZrna', 'ATIVO', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -348,6 +381,13 @@ ALTER TABLE `inspecao`
   ADD KEY `FKnjl27b4e3e49i64viectlg2i9` (`usuario_id`);
 
 --
+-- Índices de tabela `mensagem_suporte`
+--
+ALTER TABLE `mensagem_suporte`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_mensagem_suporte_usuario` (`usuario_id`);
+
+--
 -- Índices de tabela `notificacao_admin`
 --
 ALTER TABLE `notificacao_admin`
@@ -372,6 +412,13 @@ ALTER TABLE `resposta_inspecao`
 --
 ALTER TABLE `risco`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Índices de tabela `solicitacao_epi`
+--
+ALTER TABLE `solicitacao_epi`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_solicitacao_epi_usuario` (`usuario_id`);
 
 --
 -- Índices de tabela `treinamento`
@@ -442,6 +489,12 @@ ALTER TABLE `inspecao`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de tabela `mensagem_suporte`
+--
+ALTER TABLE `mensagem_suporte`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de tabela `notificacao_admin`
 --
 ALTER TABLE `notificacao_admin`
@@ -466,6 +519,12 @@ ALTER TABLE `risco`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
+-- AUTO_INCREMENT de tabela `solicitacao_epi`
+--
+ALTER TABLE `solicitacao_epi`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de tabela `treinamento`
 --
 ALTER TABLE `treinamento`
@@ -475,7 +534,7 @@ ALTER TABLE `treinamento`
 -- AUTO_INCREMENT de tabela `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de tabela `usuario_risco`
@@ -515,6 +574,12 @@ ALTER TABLE `inspecao`
   ADD CONSTRAINT `FKnjl27b4e3e49i64viectlg2i9` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`);
 
 --
+-- Restrições para tabelas `mensagem_suporte`
+--
+ALTER TABLE `mensagem_suporte`
+  ADD CONSTRAINT `fk_mensagem_suporte_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`);
+
+--
 -- Restrições para tabelas `parametro_treinamento`
 --
 ALTER TABLE `parametro_treinamento`
@@ -525,6 +590,12 @@ ALTER TABLE `parametro_treinamento`
 --
 ALTER TABLE `resposta_inspecao`
   ADD CONSTRAINT `FKiyg6r7dkojocxmrq3d1dq1t84` FOREIGN KEY (`inspecao_id`) REFERENCES `inspecao` (`id`);
+
+--
+-- Restrições para tabelas `solicitacao_epi`
+--
+ALTER TABLE `solicitacao_epi`
+  ADD CONSTRAINT `fk_solicitacao_epi_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`);
 
 --
 -- Restrições para tabelas `treinamento_colaborador`

@@ -60,6 +60,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/dashboard", "/api/dashboard/**",
                                 "/api/relatorios", "/api/relatorios/**").hasRole("ADMIN")
                         .requestMatchers("/api/notificacoes/admin/**").hasRole("ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/suporte").hasRole("COLABORADOR")
+                        .requestMatchers("/api/suporte/admin", "/api/suporte/admin/**").hasRole("ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/solicitacoes-epis").hasRole("COLABORADOR")
+                        .requestMatchers("/api/solicitacoes-epis/admin", "/api/solicitacoes-epis/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/solicitacoes-epis").hasRole("COLABORADOR")
                         .requestMatchers("/api/riscos/**").hasRole("ADMIN")
                         .requestMatchers("/api/usuarios", "/api/usuarios/**").hasRole("ADMIN")
                         .requestMatchers("/api/epis", "/api/epis/**").hasRole("ADMIN")
